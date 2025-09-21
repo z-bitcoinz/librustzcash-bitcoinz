@@ -14,6 +14,23 @@ use zcash_encoding::{Optional, Vector};
 
 use crate::sapling::SAPLING_COMMITMENT_TREE_DEPTH;
 
+// Implementation of HashSer for orchard::tree::MerkleHashOrchard
+// This allows orchard types to be used in wallet tree serialization
+impl HashSer for orchard::tree::MerkleHashOrchard {
+    fn read<R: Read>(mut reader: R) -> io::Result<Self> {
+        let mut bytes = [0u8; 32];
+        reader.read_exact(&mut bytes)?;
+
+        Option::from(Self::from_bytes(&bytes)).ok_or_else(|| {
+            io::Error::new(io::ErrorKind::InvalidData, "Invalid MerkleHashOrchard bytes")
+        })
+    }
+
+    fn write<W: Write>(&self, mut writer: W) -> io::Result<()> {
+        writer.write_all(&self.to_bytes())
+    }
+}
+
 pub mod incremental;
 
 /// A hashable node within a Merkle tree.
