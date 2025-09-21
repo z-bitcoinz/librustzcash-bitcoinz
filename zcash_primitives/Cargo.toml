@@ -57,7 +57,7 @@ features = ["pre-zip-212"]
 criterion = "0.3"
 proptest = "1.0.0"
 rand_xorshift = "0.3"
-orchard = { version = "0.2", features = ["test-dependencies"] }
+orchard = { git = "https://github.com/z-bitcoinz/orchard-bitcoinz", branch = "bitcoinz-21b-supply", features = ["test-dependencies"] }
 
 [target.'cfg(unix)'.dev-dependencies]
 pprof = { version = "0.9", features = ["criterion", "flamegraph"] } # MSRV 1.56
