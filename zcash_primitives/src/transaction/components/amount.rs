@@ -5,14 +5,14 @@ use std::ops::{Add, AddAssign, Neg, Sub, SubAssign};
 use orchard::value as orchard;
 
 pub const COIN: i64 = 1_0000_0000;
-pub const MAX_MONEY: i64 = 21_000_000 * COIN;
+pub const MAX_MONEY: i64 = 21_000_000_000 * COIN; // BitcoinZ: 21 billion supply cap
 
 pub const DEFAULT_FEE: Amount = Amount(1000);
 
 /// A type-safe representation of some quantity of Zcash.
 ///
 /// An Amount can only be constructed from an integer that is within the valid monetary
-/// range of `{-MAX_MONEY..MAX_MONEY}` (where `MAX_MONEY` = 21,000,000 × 10⁸ zatoshis).
+/// range of `{-MAX_MONEY..MAX_MONEY}` (where `MAX_MONEY` = 21,000,000,000 × 10⁸ zatoshis).
 /// However, this range is not preserved as an invariant internally; it is possible to
 /// add two valid Amounts together to obtain an invalid Amount. It is the user's
 /// responsibility to handle the result of serializing potentially-invalid Amounts. In
@@ -266,7 +266,7 @@ mod tests {
         assert!(Amount::from_nonnegative_i64_le_bytes(*neg_one).is_err());
         assert_eq!(Amount::from_i64_le_bytes(*neg_one).unwrap(), Amount(-1));
 
-        let max_money = b"\x00\x40\x07\x5a\xf0\x75\x07\x00";
+        let max_money = b"\x00\x00\x52\xac\xdf\xb2\x24\x1d"; // 21B BTCZ in little-endian
         assert_eq!(
             Amount::from_u64_le_bytes(*max_money).unwrap(),
             Amount(MAX_MONEY)
@@ -280,12 +280,12 @@ mod tests {
             Amount(MAX_MONEY)
         );
 
-        let max_money_p1 = b"\x01\x40\x07\x5a\xf0\x75\x07\x00";
+        let max_money_p1 = b"\x01\x00\x52\xac\xdf\xb2\x24\x1d"; // 21B BTCZ + 1
         assert!(Amount::from_u64_le_bytes(*max_money_p1).is_err());
         assert!(Amount::from_nonnegative_i64_le_bytes(*max_money_p1).is_err());
         assert!(Amount::from_i64_le_bytes(*max_money_p1).is_err());
 
-        let neg_max_money = b"\x00\xc0\xf8\xa5\x0f\x8a\xf8\xff";
+        let neg_max_money = b"\x00\x00\xae\x53\x20\x4d\xdb\xe2"; // -21B BTCZ in little-endian
         assert!(Amount::from_u64_le_bytes(*neg_max_money).is_err());
         assert!(Amount::from_nonnegative_i64_le_bytes(*neg_max_money).is_err());
         assert_eq!(
@@ -293,7 +293,7 @@ mod tests {
             Amount(-MAX_MONEY)
         );
 
-        let neg_max_money_m1 = b"\xff\xbf\xf8\xa5\x0f\x8a\xf8\xff";
+        let neg_max_money_m1 = b"\xff\xff\xad\x53\x20\x4d\xdb\xe2"; // -21B BTCZ - 1
         assert!(Amount::from_u64_le_bytes(*neg_max_money_m1).is_err());
         assert!(Amount::from_nonnegative_i64_le_bytes(*neg_max_money_m1).is_err());
         assert!(Amount::from_i64_le_bytes(*neg_max_money_m1).is_err());

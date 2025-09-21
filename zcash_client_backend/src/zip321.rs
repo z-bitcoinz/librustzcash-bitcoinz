@@ -568,9 +568,9 @@ mod parse {
                     None => 0,
                 };
 
-                if coins >= 21000000 && (coins > 21000000 || zats > 0) {
+                if coins >= 21000000000 && (coins > 21000000000 || zats > 0) {
                     return Err(format!(
-                        "{} coins exceeds the maximum possible Zcash value.",
+                        "{} coins exceeds the maximum possible BitcoinZ value.",
                         coins
                     ));
                 }
@@ -874,12 +874,12 @@ mod tests {
         );
 
         // valid; MAX_MONEY
-        // 21000000
-        let valid_4 = "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=21000000";
+        // 21000000000 (21 billion BitcoinZ)
+        let valid_4 = "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=21000000000";
         let v4r = TransactionRequest::from_uri(&TEST_NETWORK, valid_4).unwrap();
         assert_eq!(
             v4r.payments.get(0).map(|p| p.amount),
-            Some(Amount::from_u64(2100000000000000u64).unwrap())
+            Some(Amount::from_u64(2100000000000000000u64).unwrap())
         );
     }
 
@@ -929,9 +929,9 @@ mod tests {
         let i7ar = TransactionRequest::from_uri(&TEST_NETWORK, invalid_7a);
         assert!(i7ar.is_err());
 
-        // invalid; amount component is MAX_MONEY
-        // 21000000.00000001
-        let invalid_8 = "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=21000000.00000001";
+        // invalid; amount component exceeds MAX_MONEY
+        // 21000000000.00000001 (21 billion + 1 zatoshi)
+        let invalid_8 = "zcash:ztestsapling10yy2ex5dcqkclhc7z7yrnjq2z6feyjad56ptwlfgmy77dmaqqrl9gyhprdx59qgmsnyfska2kez?amount=21000000000.00000001";
         let i8r = TransactionRequest::from_uri(&TEST_NETWORK, invalid_8);
         assert!(i8r.is_err());
 
