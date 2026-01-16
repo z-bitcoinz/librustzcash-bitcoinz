@@ -18,10 +18,10 @@ bs58 = { version = "0.4", features = ["check"] }
 ff = "0.12"
 group = "0.12"
 jubjub = "0.9"
-protobuf = "~2.27.1" # MSRV 1.52.1
+protobuf = "~2.27.1" # TODO: Upgrade to 3.x requires significant API changes
 rand_core = "0.6"
 rusqlite = { version = "0.24", features = ["bundled", "time"] }
-secp256k1 = { version = "0.21" }
+secp256k1 = { version = "0.29" } # Updated for security fix CVE-2022-0070
 time = "0.2"
 zcash_client_backend = { version = "0.5", path = "../zcash_client_backend" }
 zcash_primitives = { version = "0.7", path = "../zcash_primitives" }
