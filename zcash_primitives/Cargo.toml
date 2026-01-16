@@ -38,11 +38,11 @@ lazy_static = "1"
 memuse = "0.2"
 nonempty = "0.7"
 orchard = { git = "https://github.com/z-bitcoinz/orchard-bitcoinz", branch = "bitcoinz-21b-supply" }
-proptest = { version = ">=1.0, <1.7", optional = true } # Pin below 1.7 to avoid rand 0.9 conflict
+proptest = { version = "1.0.0", optional = true }
 rand = "0.8"
 rand_core = "0.6"
 ripemd = { version = "0.1", optional = true }
-secp256k1 = { version = "0.29", optional = true } # Updated for security fix CVE-2022-0070
+secp256k1 = { version = "0.21", optional = true }
 sha2 = "0.9"
 subtle = "2.2.3"
 zcash_address = { version = "0.1", path = "../components/zcash_address" }
@@ -55,7 +55,7 @@ features = ["pre-zip-212"]
 
 [dev-dependencies]
 criterion = "0.3"
-proptest = ">=1.0, <1.7" # Pin below 1.7 to avoid rand 0.9 conflict
+proptest = "1.0.0"
 rand_xorshift = "0.3"
 orchard = { git = "https://github.com/z-bitcoinz/orchard-bitcoinz", branch = "bitcoinz-21b-supply", features = ["test-dependencies"] }
 
