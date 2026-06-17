@@ -15,7 +15,7 @@ use zcash_note_encryption::{
 };
 
 use crate::{
-    consensus::{self, BlockHeight, NetworkUpgrade::Canopy, ZIP212_GRACE_PERIOD},
+    consensus::{self, BlockHeight},
     keys::OutgoingViewingKey,
     memo::MemoBytes,
     sapling::{Diversifier, Note, PaymentAddress, Rseed, SaplingIvk},
@@ -360,30 +360,18 @@ pub fn sapling_note_encryption<R: RngCore, P: consensus::Parameters>(
     NoteEncryption::new_with_esk(esk, ovk, note, to, memo)
 }
 
-#[allow(clippy::if_same_then_else)]
-#[allow(clippy::needless_bool)]
 pub fn plaintext_version_is_valid<P: consensus::Parameters>(
-    params: &P,
-    height: BlockHeight,
+    _params: &P,
+    _height: BlockHeight,
     leadbyte: u8,
 ) -> bool {
-    if params.is_nu_active(Canopy, height) {
-        let grace_period_end_height =
-            params.activation_height(Canopy).unwrap() + ZIP212_GRACE_PERIOD;
-
-        if height < grace_period_end_height && leadbyte != 0x01 && leadbyte != 0x02 {
-            // non-{0x01,0x02} received after Canopy activation and before grace period has elapsed
-            false
-        } else if height >= grace_period_end_height && leadbyte != 0x02 {
-            // non-0x02 received past (Canopy activation height + grace period)
-            false
-        } else {
-            true
-        }
-    } else {
-        // return false if non-0x01 received when Canopy is not active
-        leadbyte == 0x01
-    }
+    // BitcoinZ never implemented ZIP-212 (its "Canopy" upgrade did not change Sapling
+    // note encryption), so there is no height at which v2 becomes mandatory. Accept
+    // BOTH the legacy v1 (0x01) format we now emit AND any v2 (0x02) notes that were
+    // produced on-chain while the wallet incorrectly emitted ZIP-212 notes, at every
+    // height. This keeps new v1 sends decryptable by old full nodes while still
+    // decrypting historical v2 notes already in wallets.
+    leadbyte == 0x01 || leadbyte == 0x02
 }
 
 pub fn try_sapling_note_decryption<
